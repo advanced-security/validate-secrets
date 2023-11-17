@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
+import sys
 import requests
 from argparse import ArgumentParser
 from typing import Optional
 from urllib3.util.url import parse_url
 import json
-import defusedcsv as csv
+from defusedcsv import csv
 
 import logging
 
@@ -60,10 +61,10 @@ class TeamsWebHookChecker:
         if self.notify:
             data['@type'] = 'MessageCard'
             data['@context'] = 'http://schema.org/extensions'
-            data['summary'] = 'Teams webhook detected in leaked secret'
+            data['summary'] = 'Teams webhook detected as leaked secret'
             data['themeColor'] = 'FF0000'
-            data['title'] = 'Teams webhook detected in leaked secret'
-            data['text'] = 'A Teams webhook for this channel has been detected in a secret leaked in GitHub.\n\nPlease delete the webhook and create a new one, and store the webhook URL in a secure location.\n\nSecrets such as webhooks should not be stored in code or related locations in the repository such as an issue.'
+            data['title'] = 'Teams webhook detected as leaked secret'
+            data['text'] = 'A Teams webhook for this channel has been detected as a secret leaked in GitHub.\n\nPlease delete the Incoming Webhook connector with the name shown at the top of this message and create a new one.\n\nYou should store the new webhook URL in a secure location.\n\nSecrets such as webhooks should not be stored in code or related locations in the repository such as an issue.'
 
         response = requests.post(url_to_check, data=json.dumps(data))
 
@@ -78,7 +79,7 @@ class TeamsWebHookChecker:
             return None
 
 
-def main():
+def main() -> None:
     """Command-line entrypoint."""
     parser = ArgumentParser(description='Check a list of Teams webhook URLs for validity, and return the results as CSV.')
     add_args(parser)
@@ -89,7 +90,7 @@ def main():
 
     checker = TeamsWebHookChecker(notify=args.notify)
 
-    writer = csv.csv.writer(sys.stdout if args.output_file is None else open(args.output_file, 'w'))
+    writer = csv.writer(sys.stdout if args.output_file is None else open(args.output_file, 'w'))
 
     for url in urls:
         status = checker.check(url)
