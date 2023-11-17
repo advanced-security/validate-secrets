@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[project]
+name = "check_teams_webhooks"
+version = "0.1.0"
+description = "Check Teams webhooks for validity"
+readme = "README.md"
+dependencies = [
+    "requests==2.31.0",
+    "defusedcsv==2.0.0",
+    "urllib3==1.26.18",
+]
+
+[project.urls]
+Home = "https://github.com/aegilops/check_teams_webhooks"
+
+[project.scripts]
+check_teams_webhooks = "check_teams_webhooks:main"
