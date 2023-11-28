@@ -2,9 +2,9 @@
 requires = ["setuptools", "wheel"]
 
 [project]
-name = "check_teams_webhooks"
+name = "validate_secrets"
 version = "0.1.0"
-description = "Check Teams webhooks for validity"
+description = "Check secrets for validity"
 readme = "README.md"
 dependencies = [
     "requests==2.31.0",
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.urls]
-Home = "https://github.com/aegilops/check_teams_webhooks"
+Home = "https://github.com/aegilops/validate_secrets"
 
 [project.scripts]
-check_teams_webhooks = "check_teams_webhooks:main"
+validate-secrets = "validate_secrets:main"

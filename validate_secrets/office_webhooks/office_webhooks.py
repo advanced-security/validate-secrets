@@ -2,31 +2,25 @@
 
 import sys
 import requests
-from argparse import ArgumentParser
 from typing import Optional
 from urllib3.util.url import parse_url
 import json
-from defusedcsv import csv
 
 import logging
 
 LOG = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
-def add_args(parser: ArgumentParser) -> None:
-    """Add arguments to the parser."""
-    parser.add_argument('input_file', help='The file containing the list of Teams webhook URLs, one per line')
-    parser.add_argument('--output-file', '-o', help='The output file')
-    parser.add_argument('--notify', '-n', action="store_true", help='The output file')
-    parser.add_argument('--debug', '-d', action="store_true", help='Debug output on')
-
-
-class TeamsWebHookChecker:
+class OfficeWebHookChecker:
     """Class to check if a Microsoft Teams Webhook is still valid."""
-    def __init__(self, notify: bool=False) -> None:
+    def __init__(self, notify: bool=False, debug=False) -> None:
         self.session = requests.Session()
         self.session.headers.update({'Content-Type': 'application/json'})
         self.notify = notify
+
+        if debug:
+            LOG.setLevel(logging.DEBUG)
 
     def check(self, url) -> Optional[bool]:
         """Check if a webhook is still valid."""
@@ -61,10 +55,10 @@ class TeamsWebHookChecker:
         if self.notify:
             data['@type'] = 'MessageCard'
             data['@context'] = 'http://schema.org/extensions'
-            data['summary'] = 'Teams webhook detected as leaked secret'
+            data['summary'] = 'Webhook detected as leaked secret'
             data['themeColor'] = 'FF0000'
-            data['title'] = 'Teams webhook detected as leaked secret'
-            data['text'] = 'A Teams webhook for this channel has been detected as a secret leaked in GitHub.\n\nPlease delete the Incoming Webhook connector with the name shown at the top of this message and create a new one.\n\nYou should store the new webhook URL in a secure location.\n\nSecrets such as webhooks should not be stored in code or related locations in the repository such as an issue.'
+            data['title'] = 'Webhook detected as leaked secret'
+            data['text'] = 'This webhook has been detected as a secret leaked in GitHub.\n\nPlease delete the Incoming Webhook connector with the name shown at the top of this message and create a new one.\n\nYou should store the new webhook URL in a secure location.\n\nSecrets such as webhooks should not be stored in code or related locations in the repository such as an issue.'
 
         response = requests.post(url_to_check, data=json.dumps(data))
 
@@ -77,33 +71,3 @@ class TeamsWebHookChecker:
         else:
             LOG.error(f'Error for link {url_to_check}: {response.text} ({response.status_code})')
             return None
-
-
-def main() -> None:
-    """Command-line entrypoint."""
-    parser = ArgumentParser(description='Check a list of Teams webhook URLs for validity, and return the results as CSV.')
-    add_args(parser)
-    args = parser.parse_args()
-
-    with open(args.input_file, 'r') as file:
-        urls = file.read().splitlines()
-
-    checker = TeamsWebHookChecker(notify=args.notify)
-
-    writer = csv.writer(sys.stdout if args.output_file is None else open(args.output_file, 'w'))
-
-    for url in urls:
-        status = checker.check(url)
-        
-        status_text = "invalid"
-
-        if status:
-            status_text = "valid"
-        elif status is None:
-            status_text = "error"
-
-        writer.writerow([url, status_text])
-
-
-if __name__ == "__main__":
-    main()
