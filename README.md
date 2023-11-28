@@ -1,8 +1,10 @@
-# Check Teams Webhooks
+# Validate Secrets
 
 This Python module checks a list of secrets for validity and returns the results as a CSV file.
 
 It can optionally notify the secret user if it is still valid, for some secrets.
+
+> ⚠️ validation in most cases requires connecting to a cloud service to try the credential. You need to check the legal implications of this for yourself before using this tool. This is not legal advice.
 
 ## Installation
 
