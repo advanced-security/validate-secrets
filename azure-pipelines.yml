@@ -5,7 +5,7 @@ trigger:
   branches:
     include:
     - master
-name: 1.0.$(Year:yy)$(DayOfYear)$(Rev:.r)
+
 jobs:
 - job: Phase_1
   displayName: Phase 1
