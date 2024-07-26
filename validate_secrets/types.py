@@ -5,7 +5,7 @@ class Checker():
         self.notify = notify
         self.debug = debug
 
-    def check(self, secret) -> Optional[bool]:
+    def check(self, secre: str) -> Optional[bool]:
         return None
 
     def __str__(self):

@@ -31,7 +31,7 @@ class GoogleApiKeyChecker(types.Checker):
         if debug:
             LOG.setLevel(logging.DEBUG)
 
-    def check(self, key) -> Optional[bool]:
+    def check(self, key: str) -> Optional[bool]:
         """Check if a Google API Key is valid."""
         key = key.rstrip()
 

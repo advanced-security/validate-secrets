@@ -6,7 +6,7 @@ import logging
 from defusedcsv import csv
 
 from . import types
-from . import office_webhooks, snyk_api_tokens, google_api_keys
+from . import office_webhooks, snyk_api_tokens, google_api_keys, fodselsnummer
 
 LOG = logging.getLogger(__name__)
 
@@ -14,6 +14,7 @@ SECRETS: dict[str, type[types.Checker]] = {
     "office_webhooks": office_webhooks.OfficeWebHookChecker,
     "snyk_api_tokens": snyk_api_tokens.SnykAPITokenChecker,
     "google_api_keys": google_api_keys.GoogleApiKeyChecker,
+    "fodselsnummer": fodselsnummer.FodselsNummerChecker,
 }
 
 

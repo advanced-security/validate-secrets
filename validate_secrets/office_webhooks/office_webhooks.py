@@ -24,7 +24,7 @@ class OfficeWebHookChecker(types.Checker):
         if debug:
             LOG.setLevel(logging.DEBUG)
 
-    def check(self, url) -> Optional[bool]:
+    def check(self, url: str) -> Optional[bool]:
         """Check if a webhook is still valid."""
 
         # confirm the webhook is an office webhook

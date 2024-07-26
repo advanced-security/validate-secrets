@@ -25,7 +25,7 @@ class SnykAPITokenChecker(types.Checker):
         if debug:
             LOG.setLevel(logging.DEBUG)
 
-    def check(self, token) -> Optional[bool]:
+    def check(self, token: str) -> Optional[bool]:
         """Check if a Snyk API token is still active."""
 
         if self.notify:
