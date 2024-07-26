@@ -7,8 +7,8 @@ import requests
 from typing import Optional
 import json
 import re
-
 import logging
+from .. import types
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -21,7 +21,7 @@ GOOGLE_API_INVALID_KEY_MESSAGE = 'The provided API key is invalid. '
 GOOGLE_API_PROJECT_NOT_AUTHORIZED_MESSAGE = 'This API project is not authorized to use this API.'
 
 
-class GoogleApiKeyChecker:
+class GoogleApiKeyChecker(types.Checker):
     """Class to check if a Google API Key is valid."""
     def __init__(self, notify: bool=False, debug=False) -> None:
         self.session = requests.Session()

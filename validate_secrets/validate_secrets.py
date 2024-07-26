@@ -5,11 +5,12 @@ from argparse import ArgumentParser
 import logging
 from defusedcsv import csv
 
+from . import types
 from . import office_webhooks, snyk_api_tokens, google_api_keys
 
 LOG = logging.getLogger(__name__)
 
-SECRETS = {
+SECRETS: dict[str, type[types.Checker]] = {
     "office_webhooks": office_webhooks.OfficeWebHookChecker,
     "snyk_api_tokens": snyk_api_tokens.SnykAPITokenChecker,
     "google_api_keys": google_api_keys.GoogleApiKeyChecker,
@@ -40,7 +41,7 @@ def main() -> None:
         LOG.error(f'Unknown secret type {args.secret_type}')
         return
 
-    checker = SECRETS[args.secret_type](args.notify, args.debug)
+    checker: types.Checker = SECRETS[args.secret_type](args.notify, args.debug)
 
     writer = csv.writer(sys.stdout if args.output_file is None else open(args.output_file, 'w'))
 

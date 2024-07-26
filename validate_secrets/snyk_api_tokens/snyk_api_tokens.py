@@ -6,13 +6,13 @@ import requests
 from urllib3.util.url import parse_url
 from typing import Optional
 import logging
-
+from .. import types
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-class SnykAPITokenChecker:
+class SnykAPITokenChecker(types.Checker):
     """Class to check if a Snyk API token is still valid."""
     def __init__(self, notify: bool=False, debug=False) -> None:
         self.session = requests.Session()
