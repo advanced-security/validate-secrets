@@ -7,7 +7,7 @@ version = "0.1.0"
 description = "Check secrets for validity"
 readme = "README.md"
 dependencies = [
-    "requests==2.31.0",
+    "requests==2.32.2",
     "defusedcsv==2.0.0",
     "urllib3==1.26.18",
 ]
