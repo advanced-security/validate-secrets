@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Validator for Google API Keys."""
+
 import sys
 import requests
 from typing import Optional

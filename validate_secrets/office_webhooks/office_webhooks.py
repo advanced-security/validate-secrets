@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Validator for Microsoft Office incoming webhook URLs."""
+
 import sys
 import requests
 from typing import Optional

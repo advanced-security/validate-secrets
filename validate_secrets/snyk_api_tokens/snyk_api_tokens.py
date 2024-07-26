@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Check Snyk API tokens."""
+"""Validator for Snyk API tokens."""
 
 import requests
 from urllib3.util.url import parse_url
@@ -26,7 +26,7 @@ class SnykAPITokenChecker:
             LOG.setLevel(logging.DEBUG)
 
     def check(self, token) -> Optional[bool]:
-        """Check if a Snyk API token is still valid."""
+        """Check if a Snyk API token is still active."""
 
         if self.notify:
             LOG.debug("Cannot notify Snyk API tokens")
