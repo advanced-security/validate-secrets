@@ -30,6 +30,11 @@ class OfficeWebHookChecker(types.Checker):
         # confirm the webhook is an office webhook
         parsed_url = parse_url(url)
 
+        url_to_check = parsed_url.url
+
+        if url_to_check != url:
+            LOG.warning(f'URL {url} is not normalized')
+
         if parsed_url.host is None:
             LOG.error(f'Error for link {url}: not a valid URL, no host')
             return None
@@ -44,12 +49,6 @@ class OfficeWebHookChecker(types.Checker):
 
         if not parsed_url.path.startswith('/webhookb2/'):
             LOG.error(f'Error for link {url}: not a webhook.office.com link')
-            return None
-
-        url_to_check = parsed_url.url
-
-        if url_to_check != url:
-            LOG.error(f'URL {url} is not normalized, refusing to check URL')
             return None
 
         data = {}

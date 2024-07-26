@@ -37,7 +37,11 @@ class GoogleApiKeyChecker(types.Checker):
 
         # check the format against the regex
         if not GOOGLE_API_KEY_RE.match(key):
+            LOG.error("Invalid format for Google API key")
             return None
+
+        if self.notify:
+            LOG.debug("Cannot notify Google API keys")
 
         try:
             # check the key against the Google Maps API
