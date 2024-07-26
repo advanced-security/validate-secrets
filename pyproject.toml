@@ -9,7 +9,7 @@ readme = "README.md"
 dependencies = [
     "requests==2.32.2",
     "defusedcsv==2.0.0",
-    "urllib3==1.26.18",
+    "urllib3==1.26.19",
 ]
 
 [project.urls]
