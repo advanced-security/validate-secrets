@@ -4,6 +4,10 @@ This Python module checks a list of secrets for validity and returns the results
 
 It can optionally notify the secret user if it is still valid, for some secrets.
 
+It will return 'valid', 'invalid' or 'error' for each secret.
+
+For secrets that don't have an "activity" state (e.g. identity numbers), they will either be 'valid' or 'error' for those that are not real secrets.
+
 > ⚠️ validation in most cases requires connecting to a cloud service to try the credential. You need to check the legal implications of this for yourself before using this tool. This is not legal advice.
 
 ## Installation
