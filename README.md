@@ -12,7 +12,7 @@ For secrets that don't have an "activity" state (e.g. identity numbers), they wi
 > Validation in some cases requires connecting to a cloud service to try the credential. You need to check the legal implications of this for yourself before using this tool. This is not legal advice.
 
 > [!CAUTION]
-> ⚠Notification will require connecting to a cloud service to use the credential and create some form of message. You need to check the legal implications of this for yourself before using this tool. This is not legal advice.
+> Notification will require connecting to a cloud service to use the credential and create some form of message. You need to check the legal implications of this for yourself before using this tool. This is not legal advice.
 
 ## Installation
 
