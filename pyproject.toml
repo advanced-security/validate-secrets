@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.urls]
-Home = "https://github.com/aegilops/validate_secrets"
+Home = "https://github.com/advanced-security/validate_secrets"
 
 [project.scripts]
 validate-secrets = "validate_secrets:main"
