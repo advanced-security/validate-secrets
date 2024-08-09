@@ -31,7 +31,7 @@ Where:
 * `input_file` is a text file containing a list of Teams webhook URLs, one per line.
 * `secret_type` is the type of secret to check out of: `office_webhook`, `snyk_api_token`, `google_api_key`.
 * `--output-file` or `-o` is an optional argument specifying the output file. If not provided, the results will be printed to the standard output.
-* `--notify` or `-n` is an optional argument. If provided, the Teams channel will be notified the webhook is still valid.
+* `--notify` or `-n` is an optional argument. If provided, then if compatible if the secret type, an attempt will be made to use the secret to notify the owner that the secret has been leaked.
 * `--debug` or `-d` is an optional argument. If provided, debug output will be turned on.
 
 ## License
