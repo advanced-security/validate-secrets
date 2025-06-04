@@ -1,1 +1,0 @@
-from .snyk_api_tokens import SnykAPITokenChecker

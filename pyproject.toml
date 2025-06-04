@@ -1,19 +1,56 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
-name = "validate_secrets"
-version = "0.1.0"
-description = "Check secrets for validity"
+name = "validate-secrets"
+version = "1.0.0"
+description = "Extensible secret validation tool for GitHub Secret Scanning and beyond"
 readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Stefan @theztefan Petrushevski", email = "theztefan@github.com"},
+    {name = "Paul @aegilops Hodgkinson", email = "aegilops@github.com"}, 
+]
+requires-python = ">=3.11"
 dependencies = [
-    "requests==2.32.2",
-    "defusedcsv==2.0.0",
-    "urllib3==2.2.2",
+    "defusedcsv>=2.0.0",
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "urllib3>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=25.0.0",
 ]
 
 [project.urls]
 Home = "https://github.com/advanced-security/validate_secrets"
 
 [project.scripts]
-validate-secrets = "validate_secrets:main"
+validate-secrets = "validate_secrets.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/validate_secrets"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.0",
+    "pytest-cov>=6.1.1",
+]

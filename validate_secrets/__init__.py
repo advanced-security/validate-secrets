@@ -1,1 +1,0 @@
-from .validate_secrets import main

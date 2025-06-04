@@ -1,1 +1,0 @@
-from .fodselsnummer import FodselsNummerChecker

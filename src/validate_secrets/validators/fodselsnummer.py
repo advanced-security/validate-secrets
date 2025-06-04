@@ -2,37 +2,30 @@
 
 """Validator for a Fodsels Nummer (Norwegian National Identity Number)."""
 
-import sys
-from typing import Optional
 import re
 import logging
-from .. import types
+from typing import Optional
+
+from ..core.base import Checker
 
 LOG = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
 
 # TODO: expand like in the custom pattern
-FODSELSNUMMER_RE = re.compile(r'^(([04][1-9]|[15][0-9]|[26][0-9])(0[1-9]|1[0-2])|[37]0(0[469]|11)|[37][01](0[13578]|1[02]))[0-9]{2} ?[0-9]{3} ?[0-9]{2}$')
+FODSELSNUMMER_RE = re.compile(
+    r"^(([04][1-9]|[15][0-9]|[26][0-9])(0[1-9]|1[0-2])|[37]0(0[469]|11)|[37][01](0[13578]|1[02]))[0-9]{2} ?[0-9]{3} ?[0-9]{2}$"
+)
 
 
-class FodselsNummerChecker(types.Checker):
+class FodselsNummerChecker(Checker):
     """Class to check if a Fodsels Nummer is valid."""
-    def __init__(self, notify: bool=False, debug=False) -> None:
-        self.notify = notify
 
-        if debug:
-            LOG.setLevel(logging.DEBUG)
+    name = "fodselsnummer"  # Not a GitHub secret type but still a validator we can use
+    description = "Validates Norwegian National Identity Numbers (Fødselsnummer)"
 
     def check(self, number: str) -> Optional[bool]:
-        """Check if a Fodels Nummer is valid."""
-        number = number.replace(' ', '')
-
-        # check the format against the regex
+        number = number.replace(" ", "")
         if not FODSELSNUMMER_RE.match(number):
-            return None
-
-        # check the number against the checksum algorithm
+            return False
         return self._validate_checksum(number)
 
     @staticmethod
@@ -46,7 +39,7 @@ class FodselsNummerChecker(types.Checker):
             for i in range(9):
                 checksum += int(number[i]) * weights[i]
         except (ValueError, IndexError):
-            LOG.error(f'Error for number {number}: not a valid number')
+            LOG.error(f"Error for number {number}: not a valid number")
             return None
 
         remainder = checksum % 11
@@ -63,4 +56,4 @@ class FodselsNummerChecker(types.Checker):
         if checksum == int(number[10]):
             return True
 
-        return None
+        return False
