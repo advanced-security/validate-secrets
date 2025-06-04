@@ -45,14 +45,9 @@ class ValidatorRegistry:
                 continue
 
             try:
-                # Import the module - try both absolute and relative paths
-                try:
-                    module_name = f"validate_secrets.validators.{module_info.name}"
-                    module = importlib.import_module(module_name)
-                except ImportError:
-                    # Try with the current package structure
-                    module_name = f"src.validate_secrets.validators.{module_info.name}"
-                    module = importlib.import_module(module_name)
+                # Import the module - use only the correct package namespace
+                module_name = f"validate_secrets.validators.{module_info.name}"
+                module = importlib.import_module(module_name)
 
                 # Find Checker subclasses in the module
                 found_validator = False
@@ -79,6 +74,9 @@ class ValidatorRegistry:
                 if not found_validator:
                     LOG.warning(f"No Checker subclass found in module: {module_info.name}")
 
+            except ImportError as e:
+                LOG.error(f"Failed to import validator module {module_info.name}: {e}")
+                continue
             except Exception as e:
                 LOG.error(f"Failed to load validator module {module_info.name}: {e}")
                 continue

@@ -3,7 +3,7 @@
 import logging
 from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any
-import signal
+import threading
 import functools
 
 from .exceptions import ValidationTimeoutError
@@ -11,31 +11,36 @@ from .exceptions import ValidationTimeoutError
 LOG = logging.getLogger(__name__)
 
 
-def timeout_handler(signum, frame):
-    """Signal handler for validation timeouts."""
-    raise ValidationTimeoutError("Validation timed out")
-
-
 def with_timeout(timeout_seconds: int = 30):
-    """Decorator to add timeout to validation methods."""
-
+    """Decorator to add timeout to validation methods (cross-platform)."""
+    
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            # Set up timeout signal
-            old_handler = signal.signal(signal.SIGALRM, timeout_handler)
-            signal.alarm(timeout_seconds)
-
-            try:
-                result = func(*args, **kwargs)
-                return result
-            finally:
-                # Clean up timeout signal
-                signal.alarm(0)
-                signal.signal(signal.SIGALRM, old_handler)
-
+            result = [None]
+            exception = [None]
+            
+            def target():
+                try:
+                    result[0] = func(*args, **kwargs)
+                except Exception as e:
+                    exception[0] = e
+            
+            thread = threading.Thread(target=target)
+            thread.daemon = True
+            thread.start()
+            thread.join(timeout_seconds)
+            
+            if thread.is_alive():
+                raise ValidationTimeoutError("Validation timed out")
+            
+            if exception[0]:
+                raise exception[0]
+                
+            return result[0]
+        
         return wrapper
-
+    
     return decorator
 
 

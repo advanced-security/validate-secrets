@@ -94,17 +94,12 @@ def check_file(ctx, file_path, secret_type, output, output_format, file_format, 
 
         # Process secrets
         results = []
-        secrets = list(source.get_secrets())
-
-        if not secrets:
-            console.print("[yellow]No secrets found in file[/yellow]")
-            return
-
-        console.print(f"Processing {len(secrets)} secrets...")
-
-        # Group secrets by type for validation
+        secret_count = 0
         secrets_by_type = {}
-        for secret_data in secrets:
+        
+        for secret_data in source.get_secrets():
+            secret_count += 1
+            
             secret_type_from_data = secret_data.get("type")
             if not secret_type_from_data:
                 console.print(
@@ -115,6 +110,12 @@ def check_file(ctx, file_path, secret_type, output, output_format, file_format, 
             if secret_type_from_data not in secrets_by_type:
                 secrets_by_type[secret_type_from_data] = []
             secrets_by_type[secret_type_from_data].append(secret_data)
+
+        if secret_count == 0:
+            console.print("[yellow]No secrets found in file[/yellow]")
+            return
+
+        console.print(f"Processing {secret_count} secrets...")
 
         # Validate secrets by type
         for current_secret_type, secret_list in secrets_by_type.items():
