@@ -75,7 +75,7 @@ jobs:
         run: uv sync --dev
 
       - name: Install the package
-        run: uv pip install -e .
+        run: uv run pip install -e .
 
       - name: Test CLI help command
         run: uv run validate-secrets --help
