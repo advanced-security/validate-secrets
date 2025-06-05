@@ -1,6 +1,7 @@
 # validate-secrets
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Action Status: CI](https://github.com/advanced-security/validate-secrets/actions/workflows/ci.yml/badge.svg)](https://github.com/advanced-security/validate-secrets/actions/workflows/ci.yml)
 
 An extensible secret validation tool with dynamic plugin system for identifying and validating leaked credentials. `validate-secrets` is designed to help developers and security teams to identify and validate  credentials that have been accidentally exposed in code repositories or other data sources. It supports multiple validators, integrates with GitHub Secret Scanning REST API. It provides a CLI interface with support for ease of use and further integration.
 
