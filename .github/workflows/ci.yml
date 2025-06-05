@@ -1,0 +1,121 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Check code formatting with black
+        run: uv run black --check --diff src/ tests/
+
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Run tests
+        run: uv run python -m pytest tests/ -v
+
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Install the package
+        run: uv pip install -e .
+
+      - name: Test CLI help command
+        run: uv run validate-secrets --help
+
+      - name: Test list validators command
+        run: uv run validate-secrets list-validators
+
+      - name: Test file validation with sample data
+        run: |
+            # Test with CSV file
+            uv run validate-secrets check-file tests/samples/test_secrets.csv --file-format csv --format table
+            
+            # Test with JSON file
+            uv run validate-secrets check-file tests/samples/test_secrets.json --file-format json --format json
+
+            # Test with text file
+            uv run validate-secrets check-file tests/samples/test_secrets.txt --file-format text google_api_key --format table
+
+      - name: Test single secret validation
+        run: |
+            # Test with a sample Google API key format (invalid but proper format)
+            uv run validate-secrets validate "AIzaSyA1234567890ABCDEasdasdw" google_api_key
+
+  ci-success:
+    name: CI Success
+    runs-on: ubuntu-latest
+    needs: [lint, test, integration-test]
+    if: always()
+    steps:
+      - name: Check all jobs status
+        run: |
+          echo "Lint: ${{ needs.lint.result }}"
+          echo "Test: ${{ needs.test.result }}"
+          echo "Integration Test: ${{ needs.integration-test.result }}"
+          
+          if [[ "${{ needs.lint.result }}" != "success" || 
+                "${{ needs.test.result }}" != "success" || 
+                "${{ needs.integration-test.result }}" != "success" ]]; then
+            echo "One or more jobs failed"
+            exit 1
+          fi
+          echo "All CI jobs completed successfully!"
+          

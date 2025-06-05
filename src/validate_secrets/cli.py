@@ -75,7 +75,7 @@ def check_file(ctx, file_path, secret_type, output, output_format, file_format, 
     try:
         config = ctx.obj["config"]
         validation_config = config.get_validation_config()
-        
+
         # Get default file format from config if not provided via CLI
         if file_format is None:
             input_config = config.get_input_format()
@@ -96,10 +96,10 @@ def check_file(ctx, file_path, secret_type, output, output_format, file_format, 
         results = []
         secret_count = 0
         secrets_by_type = {}
-        
+
         for secret_data in source.get_secrets():
             secret_count += 1
-            
+
             secret_type_from_data = secret_data.get("type")
             if not secret_type_from_data:
                 console.print(

@@ -13,34 +13,34 @@ LOG = logging.getLogger(__name__)
 
 def with_timeout(timeout_seconds: int = 30):
     """Decorator to add timeout to validation methods (cross-platform)."""
-    
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             result = [None]
             exception = [None]
-            
+
             def target():
                 try:
                     result[0] = func(*args, **kwargs)
                 except Exception as e:
                     exception[0] = e
-            
+
             thread = threading.Thread(target=target)
             thread.daemon = True
             thread.start()
             thread.join(timeout_seconds)
-            
+
             if thread.is_alive():
                 raise ValidationTimeoutError("Validation timed out")
-            
+
             if exception[0]:
                 raise exception[0]
-                
+
             return result[0]
-        
+
         return wrapper
-    
+
     return decorator
 
 

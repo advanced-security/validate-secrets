@@ -52,7 +52,7 @@ class Config:
             "format": os.getenv("DEFAULT_OUTPUT_FORMAT", "csv").lower(),
             "file": os.getenv("DEFAULT_OUTPUT_FILE", "stdout"),
         }
-    
+
     def get_input_format(self) -> Dict[str, Any]:
         """Get input format configuration from environment."""
         return {

@@ -97,21 +97,20 @@ Note: Most accurate way to see available validators is to run `validate-secrets 
 
 ## Configuration
 
-Create a `.env` file for configuration is the recommended way to setup the tool. You can copy the example file provided in the repository:
+The tool for a lot of use cases can be controlled via the provide CLI options. Another way to configure the tool is using environment variables. The `.env` file is a common way another way to do this. With `validate-secrets` the primarily use is to override default values and easier integration in CI/CD systems. The `GITHUB_TOKEN` is required for GitHub integration.
+
+You can copy the example file provided in the repository:
 
 ```bash
 cp .env.example .env
 ```
 
-### Environment Variables
-
-Depending on the usage a lot of these options can be provided via command line interface (CLI) as well. The `.env` file is just another way to configure the tool and primarily used to override default values. The `GITHUB_TOKEN` is required for GitHub integration.
-
 ```bash
 # GitHub Configuration
-GITHUB_TOKEN=ghp_xxx
+GITHUB_TOKEN=ghp_xxx  # This is mandatory for GitHub integration
 GITHUB_ORG=my-organization # Optional, can be provided in CLI
 GITHUB_REPO=my-repository # Optional, can be provided in CLI
+GITHUB_API_URL=https://api.github.com # Optional, only needed if you are integrating with your GHES or GHEC DR instance
 
 # Validation Configuration - All options are optional, can be provided in CLI
 VALIDATION_TIMEOUT=30 
