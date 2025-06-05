@@ -22,13 +22,6 @@ dependencies = [
     "urllib3>=2.0.0",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "black>=25.0.0",
-]
-
 [project.urls]
 Home = "https://github.com/advanced-security/validate_secrets"
 
@@ -53,4 +46,5 @@ python_functions = ["test_*"]
 dev = [
     "pytest>=8.4.0",
     "pytest-cov>=6.1.1",
+    "black>=25.0.0",
 ]
