@@ -25,19 +25,14 @@ def output_results(results: List[Dict[str, Any]], output_file: str, format_type:
 def output_table(results: List[Dict[str, Any]]):
     """Output results as a table."""
     table = Table(title="Validation Results")
-    table.add_column("Secret", style="cyan", max_width=30)
-    table.add_column("Type", style="green")
-    table.add_column("Status", style="yellow")
-    table.add_column("Source", style="blue")
+    table.add_column("Secret", style="cyan", no_wrap=True)
+    table.add_column("Type", style="green", no_wrap=True)
+    table.add_column("Status", style="yellow", no_wrap=True)
+    table.add_column("Source", style="blue", no_wrap=True)
 
     for result in results:
         secret = result["secret"]
-        if len(secret) > 27:
-            secret = secret[:24] + "..."
-
         source = result.get("metadata", {}).get("source", "Unknown")
-        if isinstance(source, str) and len(source) > 20:
-            source = Path(source).name
 
         status_style = ""
         if result["status"] == "valid":

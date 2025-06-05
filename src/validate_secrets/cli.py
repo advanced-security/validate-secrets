@@ -12,12 +12,11 @@ from rich.progress import track
 
 from .config import Config
 from .core.registry import (
-    get_validators,
     get_validator,
     list_validators as list_available_validators,
     get_validator_info,
 )
-from .core.exceptions import ValidateSecretsError, SourceError, ConfigurationError
+from .core.exceptions import ConfigurationError
 from .sources.file import FileSource
 from .sources.github import GitHubSource
 from .utils import output_results
@@ -257,9 +256,7 @@ def check_github(ctx, org, repo, secret_type, state, validity, output, output_fo
                     status_text = "error"
 
                 result = {
-                    "secret": (
-                        secret[:10] + "..." if len(secret) > 10 else secret
-                    ),  # Truncate for display
+                    "secret": secret,
                     "type": github_secret_type,
                     "status": status_text,
                     "validator": github_secret_type,
@@ -281,9 +278,7 @@ def check_github(ctx, org, repo, secret_type, state, validity, output, output_fo
                     )
 
                 result = {
-                    "secret": (
-                        secret[:10] + "..." if len(secret) > 10 else secret
-                    ),  # Truncate for display
+                    "secret": secret,
                     "type": github_secret_type,
                     "status": status,
                     "error": error_msg,
