@@ -97,7 +97,8 @@ jobs:
       - name: Test single secret validation
         run: |
             # Test with a sample Google API key format (invalid but proper format)
-            uv run validate-secrets validate "AIzaSyA1234567890ABCDEasdasdw" google_api_key
+            export TEST_KEY=$(head -n 1 tests/samples/test_google_keys.txt)
+            uv run validate-secrets validate "$TEST_KEY" google_api_key
 
   ci-success:
     name: CI Success
@@ -118,4 +119,3 @@ jobs:
             exit 1
           fi
           echo "All CI jobs completed successfully!"
-          
