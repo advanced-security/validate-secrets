@@ -211,6 +211,6 @@ This project is licensed under the terms of the MIT open source license. Please 
 
 ## Support
 
-- **Issues**: Report bugs and feature requests on GitHub [issues page](https://github.com/advanced-security/validate_secrets/issues)
+- **Issues**: Report bugs and feature requests on GitHub [issues page](https://github.com/advanced-security/validate-secrets/issues)
 - **Contributions**: Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 - **Security**: Check our security policy [SECURITY.md](SECURITY.md)
