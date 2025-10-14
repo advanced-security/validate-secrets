@@ -178,7 +178,7 @@ def check_file(ctx, file_path, secret_type, output, output_format, file_format, 
 )
 @click.option(
     "--validity",
-    type=click.Choice(["valid", "invalid", "unknown"]),
+    type=click.Choice(["active", "inactive", "unknown"]),
     default="unknown",
     help="Secret validity filter",
 )
