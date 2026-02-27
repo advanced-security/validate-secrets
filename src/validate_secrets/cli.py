@@ -33,8 +33,12 @@ console = Console()
     is_flag=True,
     help="Enable debug logging. To use, add the flag as a first argument!",
 )
+@click.option(
+    "--host-url",
+    help="Base URL of the service to validate against",
+)
 @click.pass_context
-def cli(ctx, config, debug):
+def cli(ctx, config, debug, host_url):
     """Extensible secret validation tool."""
     ctx.ensure_object(dict)
 
@@ -48,6 +52,7 @@ def cli(ctx, config, debug):
         ctx.obj["config"].setup_logging()
 
     ctx.obj["debug"] = debug
+    ctx.obj["host_url"] = host_url
 
 
 @cli.command()
@@ -125,6 +130,7 @@ def check_file(ctx, file_path, secret_type, output, output_format, file_format, 
                     notify=notify or validation_config["notifications"],
                     debug=ctx.obj["debug"],
                     timeout=validation_config["timeout"],
+                    host_url=ctx.obj.get("host_url"),
                 )
 
                 for secret_data in track(
@@ -245,6 +251,7 @@ def check_github(ctx, org, repo, secret_type, state, validity, output, output_fo
                     notify=notify or validation_config["notifications"],
                     debug=ctx.obj["debug"],
                     timeout=validation_config["timeout"],
+                    host_url=ctx.obj.get("host_url"),
                 )
 
                 status = validator.check(secret)
@@ -334,6 +341,7 @@ def validate(ctx, secret, secret_type, notify):
             notify=notify or validation_config["notifications"],
             debug=ctx.obj["debug"],
             timeout=validation_config["timeout"],
+            host_url=ctx.obj.get("host_url"),
         )
 
         # Validate secret
