@@ -12,6 +12,45 @@ from validate_secrets.validators.fodselsnummer import FodselsNummerChecker
 from validate_secrets.validators.google_api_keys import GoogleApiKeyChecker
 from validate_secrets.validators.microsoft_teams_webhook import OfficeWebHookChecker
 from validate_secrets.validators.snyk_api_token import SnykAPITokenChecker
+from validate_secrets.validators.databricks_token import DatabricksTokenChecker
+
+class TestDatabricksTokenChecker:
+    """Test the Databricks token validator with host_url parameter."""
+
+    def test_host_from_named_parameter(self):
+        """Test that host_url can be set as a named parameter."""
+        checker = DatabricksTokenChecker(
+            host_url="https://my-workspace.databricks.com"
+        )
+        assert checker.host_url == "https://my-workspace.databricks.com"
+
+    def test_host_strips_trailing_slash(self):
+        """Test that trailing slash is stripped from host."""
+        checker = DatabricksTokenChecker(
+            host_url="https://my-workspace.databricks.com/"
+        )
+        assert checker.host_url == "https://my-workspace.databricks.com"
+
+    def test_host_from_env_var_fallback(self, monkeypatch):
+        """Test that DATABRICKS_HOST env var is used as fallback."""
+        monkeypatch.setenv("DATABRICKS_HOST", "https://env-workspace.databricks.com")
+        checker = DatabricksTokenChecker()
+        assert checker.host_url == "https://env-workspace.databricks.com"
+
+    def test_named_param_overrides_env_var(self, monkeypatch):
+        """Test that host_url parameter takes precedence over env var."""
+        monkeypatch.setenv("DATABRICKS_HOST", "https://env-workspace.databricks.com")
+        checker = DatabricksTokenChecker(
+            host_url="https://cli-workspace.databricks.com"
+        )
+        assert checker.host_url == "https://cli-workspace.databricks.com"
+
+    def test_missing_host_returns_none(self, monkeypatch):
+        """Test that check returns None when host is not configured."""
+        monkeypatch.delenv("DATABRICKS_HOST", raising=False)
+        checker = DatabricksTokenChecker()
+        result = checker.check("dapi_fake_token_123")
+        assert result is None
 
 
 class TestFodselsNummerChecker:
@@ -114,6 +153,9 @@ class TestValidatorMetadata:
     def test_all_validators_have_names(self):
         """Test that all validators have proper names."""
         validators = [
+            DatabricksTokenChecker(
+                host_url="https://test.databricks.com"
+            ),
             FodselsNummerChecker(),
             GoogleApiKeyChecker(),
             OfficeWebHookChecker(),
@@ -128,6 +170,9 @@ class TestValidatorMetadata:
     def test_all_validators_have_descriptions(self):
         """Test that all validators have descriptions."""
         validators = [
+            DatabricksTokenChecker(
+                host_url="https://test.databricks.com"
+            ),
             FodselsNummerChecker(),
             GoogleApiKeyChecker(),
             OfficeWebHookChecker(),

@@ -93,6 +93,7 @@ validate-secrets check-file input/secrets_file.json --file-format json --format 
 | `google_api_key` | Google API Keys | AIza... format |
 | `microsoft_teams_webhook` | Microsoft Teams/Office 365 Webhooks | webhook.office.com URLs |
 | `snyk_api_token` | Snyk API Tokens | API tokens |
+| `databricks_token` | Databricks Personal Access Tokens | `dapi...` format |
 
 Note: Most accurate way to see available validators is to run `validate-secrets list-validators` command.
 
@@ -199,6 +200,15 @@ With the `--output` option you can also specify the file to write the output to:
 ```bash
 validate-secrets check-file secrets.txt google_api_key --file-format csv --output results.csv
 ```
+
+### Databricks Token Validation
+
+Validate Databricks Personal Access Tokens against a workspace. The `--host-url` flag provides the workspace URL:
+
+```bash
+# Validate a single token
+validate-secrets --host-url https://my-workspace.cloud.databricks.com validate "dapi1234abcd..." databricks_token
+````
 
 ## License
 
