@@ -14,21 +14,18 @@ from validate_secrets.validators.microsoft_teams_webhook import OfficeWebHookChe
 from validate_secrets.validators.snyk_api_token import SnykAPITokenChecker
 from validate_secrets.validators.databricks_token import DatabricksTokenChecker
 
+
 class TestDatabricksTokenChecker:
     """Test the Databricks token validator with host_url parameter."""
 
     def test_host_from_named_parameter(self):
         """Test that host_url can be set as a named parameter."""
-        checker = DatabricksTokenChecker(
-            host_url="https://my-workspace.databricks.com"
-        )
+        checker = DatabricksTokenChecker(host_url="https://my-workspace.databricks.com")
         assert checker.host_url == "https://my-workspace.databricks.com"
 
     def test_host_strips_trailing_slash(self):
         """Test that trailing slash is stripped from host."""
-        checker = DatabricksTokenChecker(
-            host_url="https://my-workspace.databricks.com/"
-        )
+        checker = DatabricksTokenChecker(host_url="https://my-workspace.databricks.com/")
         assert checker.host_url == "https://my-workspace.databricks.com"
 
     def test_host_from_env_var_fallback(self, monkeypatch):
@@ -40,9 +37,7 @@ class TestDatabricksTokenChecker:
     def test_named_param_overrides_env_var(self, monkeypatch):
         """Test that host_url parameter takes precedence over env var."""
         monkeypatch.setenv("DATABRICKS_HOST", "https://env-workspace.databricks.com")
-        checker = DatabricksTokenChecker(
-            host_url="https://cli-workspace.databricks.com"
-        )
+        checker = DatabricksTokenChecker(host_url="https://cli-workspace.databricks.com")
         assert checker.host_url == "https://cli-workspace.databricks.com"
 
     def test_missing_host_returns_none(self, monkeypatch):
@@ -153,9 +148,7 @@ class TestValidatorMetadata:
     def test_all_validators_have_names(self):
         """Test that all validators have proper names."""
         validators = [
-            DatabricksTokenChecker(
-                host_url="https://test.databricks.com"
-            ),
+            DatabricksTokenChecker(host_url="https://test.databricks.com"),
             FodselsNummerChecker(),
             GoogleApiKeyChecker(),
             OfficeWebHookChecker(),
@@ -170,9 +163,7 @@ class TestValidatorMetadata:
     def test_all_validators_have_descriptions(self):
         """Test that all validators have descriptions."""
         validators = [
-            DatabricksTokenChecker(
-                host_url="https://test.databricks.com"
-            ),
+            DatabricksTokenChecker(host_url="https://test.databricks.com"),
             FodselsNummerChecker(),
             GoogleApiKeyChecker(),
             OfficeWebHookChecker(),
