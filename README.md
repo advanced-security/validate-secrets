@@ -207,8 +207,8 @@ Validate Databricks Personal Access Tokens against a workspace. The `--host-url`
 
 ```bash
 # Validate a single token
-validate-secrets --host-url https://my-workspace.cloud.databricks.com validate "dapi1234abcd..." databricks_token
-````
+validate-secrets validate "dapi1234abcd..." databricks_token --host-url https://my-workspace.cloud.databricks.com
+```
 
 ## License
 

@@ -54,25 +54,17 @@ class Checker(ABC):
     name: str = ""
     description: str = ""
 
-    def __init__(
-        self,
-        notify: bool = False,
-        debug: bool = False,
-        timeout: int = 30,
-        host_url: Optional[str] = None,
-    ) -> None:
+    def __init__(self, notify: bool = False, debug: bool = False, timeout: int = 30) -> None:
         """Initialize the checker.
 
         Args:
             notify: Whether to send notifications to endpoints
             debug: Enable debug logging
             timeout: Timeout in seconds for validation
-            host_url: Base URL of the service to validate against
         """
         self.notify = notify
         self.debug = debug
         self.timeout = timeout
-        self.host_url = host_url.rstrip("/") if host_url else None
 
         if self.debug:
             logging.getLogger().setLevel(logging.DEBUG)

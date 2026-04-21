@@ -3,6 +3,7 @@
 """Command line interface for validate-secrets."""
 
 import sys
+import inspect
 import logging
 
 import click
@@ -25,6 +26,17 @@ LOG = logging.getLogger(__name__)
 console = Console()
 
 
+def _create_validator(validator_class, **kwargs):
+    """Create a validator instance, only passing kwargs it accepts.
+
+    This allows validator-specific options like host_url to be passed
+    without breaking validators that don't accept them.
+    """
+    sig = inspect.signature(validator_class.__init__)
+    valid_kwargs = {k: v for k, v in kwargs.items() if k in sig.parameters}
+    return validator_class(**valid_kwargs)
+
+
 @click.group()
 @click.option("--config", "-c", help="Path to .env configuration file")
 @click.option(
@@ -33,12 +45,8 @@ console = Console()
     is_flag=True,
     help="Enable debug logging. To use, add the flag as a first argument!",
 )
-@click.option(
-    "--host-url",
-    help="Base URL of the service to validate against",
-)
 @click.pass_context
-def cli(ctx, config, debug, host_url):
+def cli(ctx, config, debug):
     """Extensible secret validation tool."""
     ctx.ensure_object(dict)
 
@@ -52,7 +60,6 @@ def cli(ctx, config, debug, host_url):
         ctx.obj["config"].setup_logging()
 
     ctx.obj["debug"] = debug
-    ctx.obj["host_url"] = host_url
 
 
 @cli.command()
@@ -73,8 +80,12 @@ def cli(ctx, config, debug, host_url):
     help="Input file format",
 )
 @click.option("--notify", "-n", is_flag=True, help="Send notifications to endpoints")
+@click.option(
+    "--host-url",
+    help="Base URL of the service to validate against (only used by validators that require it)",
+)
 @click.pass_context
-def check_file(ctx, file_path, secret_type, output, output_format, file_format, notify):
+def check_file(ctx, file_path, secret_type, output, output_format, file_format, notify, host_url):
     """Check secrets from a file."""
     try:
         config = ctx.obj["config"]
@@ -126,11 +137,12 @@ def check_file(ctx, file_path, secret_type, output, output_format, file_format, 
             try:
                 # Get validator for this secret type
                 validator_class = get_validator(current_secret_type)
-                validator = validator_class(
+                validator = _create_validator(
+                    validator_class,
                     notify=notify or validation_config["notifications"],
                     debug=ctx.obj["debug"],
                     timeout=validation_config["timeout"],
-                    host_url=ctx.obj.get("host_url"),
+                    host_url=host_url,
                 )
 
                 for secret_data in track(
@@ -198,8 +210,14 @@ def check_file(ctx, file_path, secret_type, output, output_format, file_format, 
     help="Output format",
 )
 @click.option("--notify", "-n", is_flag=True, help="Send notifications to endpoints")
+@click.option(
+    "--host-url",
+    help="Base URL of the service to validate against (only used by validators that require it)",
+)
 @click.pass_context
-def check_github(ctx, org, repo, secret_type, state, validity, output, output_format, notify):
+def check_github(
+    ctx, org, repo, secret_type, state, validity, output, output_format, notify, host_url
+):
     """Check secrets from GitHub secret scanning alerts."""
     try:
         config = ctx.obj["config"]
@@ -247,11 +265,12 @@ def check_github(ctx, org, repo, secret_type, state, validity, output, output_fo
             try:
                 # Try to get validator using the GitHub secret type directly
                 validator_class = get_validator(github_secret_type)
-                validator = validator_class(
+                validator = _create_validator(
+                    validator_class,
                     notify=notify or validation_config["notifications"],
                     debug=ctx.obj["debug"],
                     timeout=validation_config["timeout"],
-                    host_url=ctx.obj.get("host_url"),
+                    host_url=host_url,
                 )
 
                 status = validator.check(secret)
@@ -328,8 +347,12 @@ def list_validators_cmd():
 @click.argument("secret")
 @click.argument("secret_type", type=click.Choice(list_available_validators()))
 @click.option("--notify", "-n", is_flag=True, help="Send notifications to endpoints")
+@click.option(
+    "--host-url",
+    help="Base URL of the service to validate against (only used by validators that require it)",
+)
 @click.pass_context
-def validate(ctx, secret, secret_type, notify):
+def validate(ctx, secret, secret_type, notify, host_url):
     """Validate a single secret."""
     try:
         config = ctx.obj["config"]
@@ -337,11 +360,12 @@ def validate(ctx, secret, secret_type, notify):
 
         # Get validator
         validator_class = get_validator(secret_type)
-        validator = validator_class(
+        validator = _create_validator(
+            validator_class,
             notify=notify or validation_config["notifications"],
             debug=ctx.obj["debug"],
             timeout=validation_config["timeout"],
-            host_url=ctx.obj.get("host_url"),
+            host_url=host_url,
         )
 
         # Validate secret

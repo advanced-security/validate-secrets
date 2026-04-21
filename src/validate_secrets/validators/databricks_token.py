@@ -25,9 +25,12 @@ class DatabricksTokenChecker(Checker):
         timeout: int = 30,
         host_url: Optional[str] = None,
     ) -> None:
-        super().__init__(notify, debug, timeout, host_url)
+        super().__init__(notify, debug, timeout)
         self.session = requests.Session()
         self.session.headers.update({"Content-Type": "application/json"})
+
+        # Handle host_url: strip trailing slash
+        self.host_url = host_url.rstrip("/") if host_url else None
 
         # Fall back to DATABRICKS_HOST env var if host_url not provided
         if not self.host_url:
@@ -73,5 +76,5 @@ class DatabricksTokenChecker(Checker):
                 )
                 return None
         except Exception as e:
-            LOG.error(f"Error validating Databricks token: {e}")
+            LOG.error("Error validating Databricks token: %s", e)
             return None
