@@ -31,6 +31,7 @@ class TestValidatorRegistry:
         assert "google_api_key" in validators
         assert "microsoft_teams_webhook" in validators
         assert "snyk_api_token" in validators
+        assert "databricks_token" in validators
 
     def test_get_validator(self):
         """Test getting a specific validator."""
