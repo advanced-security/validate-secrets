@@ -44,7 +44,7 @@ python_functions = ["test_*"]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.4.0",
+    "pytest>=9.0.3",
     "pytest-cov>=6.1.1",
     "black>=25.0.0",
 ]
