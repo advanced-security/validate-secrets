@@ -17,7 +17,7 @@ dependencies = [
     "defusedcsv>=3.0.0",
     "requests>=2.34.2",
     "python-dotenv>=1.2.2",
-    "click>=8.4.1",
+    "click>=8.4.2",
     "rich>=15.0.0",
     "urllib3>=2.7.0",
 ]
@@ -44,7 +44,7 @@ python_functions = ["test_*"]
 
 [dependency-groups]
 dev = [
-    "pytest>=9.1.0",
+    "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "black>=26.5.1",
 ]
