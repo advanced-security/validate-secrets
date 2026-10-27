@@ -195,3 +195,6 @@ cython_debug/
 .cursorindexingignore
 
 .DS_Store
+
+# Local development plans, review notes, and supporting artifacts
+/.logs/

@@ -1,92 +1,62 @@
-# Contribution Guidelines for Validate Secrets
+# Contributing
 
-This document outlines the contribution process for the Validate Secrets project, including information about the structure and architecture of the project as well as how to add new validators, run tests, etc.
+Contributions are welcome: new validators, fixes, tests, and clearer docs.
 
-## Architecture
+## Start here
 
-### Core Components
+1. Follow [installation](README.md#installation), then
+   [development setup](docs/development.md#setup).
+2. Read [architecture](docs/architecture.md) to see how the parts fit together
+   and find the code and tests for your change.
+3. Use [project instructions](.github/project.instructions.md) for contracts and
+   lessons learned, and [Python instructions](.github/python.instructions.md)
+   for coding style.
 
-- **Registry System** (`core/registry.py`): Auto-discovers and manages validators
-- **Base Classes** (`core/base.py`): Abstract base class for validators
-- **Data Sources** (`sources/`): Abstraction layer for different input sources
-- **CLI Interface** (`cli.py`): Click-based command-line interface
+## Make a change
 
-### Plugin Discovery
+1. Fork the repository if needed and create a feature branch.
+2. Follow the [change workflow](docs/development.md#change-workflow).
+3. Add tests for the behavior you change and run the
+   [tests and formatting checks](docs/development.md#tests-and-formatting).
+4. Open a pull request explaining the change, how you checked it, and any limits.
+   Do not include real secrets or local logs.
 
-The system uses `pkgutil.iter_modules()` to scan the `validators/` directory and automatically register any class that inherits from `Checker`.
+## Architecture in brief
 
-### Timeout Handling
+The CLI reads configuration and secrets from a file or GitHub. The registry picks
+a checker for each secret type. Checkers validate the secrets, then output helpers
+write the results. See [architecture](docs/architecture.md) for the small code map.
 
-All validators support configurable timeouts using signal-based interruption to prevent hanging on network requests.
+## Adding New Validators
 
-### Performance
-
-- **Timeout Controls**: Prevent hanging on slow network requests
-- **Memory Efficient**: Streaming file processing for large files
-- **Progress Indicators**: Real-time progress feedback
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-validator`
-3. Add your validator to `src/validate_secrets/validators/`
-4. Add tests for your validator
-5. Submit a pull request
-
-### Setup Development Environment
-
-```bash
-git clone https://github.com/advanced-security/validate_secrets.git
-cd validate_secrets
-uv install --dev
-```
-
-### Running Tests
-
-```bash
-uv run python -m pytest tests/ -v
-```
-
-### Code Formatting
-
-```bash
-uv run black src/ tests/
-```
-
-### Adding New Validators
-
-- Inherit from `Checker` base class
-- Implement `check(secret: str) -> Optional[bool]` method
-- Return `True` for valid, `False` for invalid, `None` for errors
-- Add proper error handling and logging
-- Include timeout support for network requests
-- Provide clear name and description attributes
-
-The plugin system automatically discovers new validators. Create a new file in `src/validate_secrets/validators/`:
+Create a module in `src/validate_secrets/validators/` and inherit from `Checker`.
+Set a unique `name` and a short `description`, then implement `check()`.
+Return `True` for valid, `False` for invalid, and `None` for errors or unknown
+results. See [project contracts](.github/project.instructions.md#contracts-and-guardrails)
+for discovery and constructor rules.
 
 ```python
 # src/validate_secrets/validators/my_validator.py
 
 from ..core.base import Checker
 
+
 class MySecretChecker(Checker):
     """Custom secret validator."""
-    
+
     name = "my_secret"
     description = "Validates my custom secrets"
-    
-    def check(self, secret: str) -> Optional[bool]:
-        """Validate the secret."""
-        # Your validation logic here
-        if secret.startswith("mysecret_"):
-            # Make API call or validate format
-            return True  # Valid
-        return False  # Invalid
+
+    def check(self, secret: str) -> bool | None:
+        """Check the format of a synthetic example secret, not a credential."""
+        return secret.startswith("mysecret_")
 ```
 
-The validator will be automatically discovered and available via CLI:
+This only checks a made-up format; it does not verify a credential.
+The registry discovers it automatically. Next:
 
-```bash
-validate-secrets list-validators
-validate-secrets validate "mysecret_123" my_secret
-```
+- Add cases in `tests/test_validators.py`. Mock requests for a network-backed
+  validator and check valid, invalid, and error responses.
+- Use [discovery commands](docs/development.md#discover-a-new-validator) to check
+  that the CLI can find and run it.
+- Update the available validators in README when adding a supported type.
