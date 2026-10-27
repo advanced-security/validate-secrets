@@ -19,6 +19,16 @@ An extensible secret validation tool with dynamic plugin system for identifying 
 - **Multiple Input and Output Formats**: CSV, JSON, and table output
 - **Extensible Architecture**: Rather easy to add new/your own validators
 
+## Developing
+
+Start with [AGENTS.md](AGENTS.md) for the shared human/agent onboarding route.
+[Architecture](docs/architecture.md) explains the parts and maps code to tests.
+[Project instructions](.github/project.instructions.md) cover contracts and
+lessons learned. [Development](docs/development.md) covers setup,
+checks, the review workflow, and local `.logs/` artifacts;
+[Python instructions](.github/python.instructions.md) define coding conventions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and validator guidance.
+
 ## Quick Start
 
 ### Installation
@@ -26,16 +36,21 @@ An extensible secret validation tool with dynamic plugin system for identifying 
 Using `uv` (recommended):
 
 ```bash
-git clone https://github.com/advanced-security/validate_secrets.git
-cd validate_secrets
-uv pip install -e .
+git clone https://github.com/advanced-security/validate-secrets.git
+cd validate-secrets
+uv sync --locked
+uv run validate-secrets --help
 ```
+
+With uv, prefix the commands below with `uv run` to use the project environment.
+Contributors should use `uv sync --dev --locked` as described in
+[development](docs/development.md).
 
 Using `pip`:
 
 ```bash
-git clone https://github.com/advanced-security/validate_secrets.git
-cd validate_secrets
+git clone https://github.com/advanced-security/validate-secrets.git
+cd validate-secrets
 pip install -e .
 ```
 
@@ -56,7 +71,7 @@ validate-secrets list-validators
 Validate a single secret:
 
 ```bash
-validate-secrets validate "AIzaSyABC123..." google_api_keys
+validate-secrets validate "AIzaSyABC123..." google_api_key
 ```
 
 Check GitHub Secret Scanning alerts:
@@ -70,7 +85,7 @@ Validate secrets from files:
 **Text files** (secret_type required):
 
 ```bash
-validate-secrets check-file input/secrets_file.txt google_api_keys --file-format text --format table
+validate-secrets check-file input/secrets_file.txt google_api_key --file-format text --format table
 ```
 
 **CSV files** (secret_type read from file):
@@ -140,7 +155,7 @@ AIzaSyDEF456...
 Usage:
 
 ```bash
-validate-secrets check-file secrets.txt google_api_keys --file-format text
+validate-secrets check-file secrets.txt google_api_key --file-format text
 ```
 
 **CSV files** (secret_type read from 'type' column):
@@ -198,7 +213,7 @@ Supports multiple output formats for results with the `--format` option:
 With the `--output` option you can also specify the file to write the output to:
 
 ```bash
-validate-secrets check-file secrets.txt google_api_key --file-format csv --output results.csv
+validate-secrets check-file secrets.txt google_api_key --file-format text --output results.csv
 ```
 
 ### Databricks Token Validation
