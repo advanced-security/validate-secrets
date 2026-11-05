@@ -109,6 +109,15 @@ validate-secrets check-file input/secrets_file.json --file-format json --format 
 | `microsoft_teams_webhook` | Microsoft Teams/Office 365 Webhooks | webhook.office.com URLs |
 | `snyk_api_token` | Snyk API Tokens | API tokens |
 | `databricks_token` | Databricks Personal Access Tokens | `dapi...` format |
+| `flickr_api_key` | Flickr API Keys | API keys |
+| `clickup_api_key` | ClickUp API Keys | API keys |
+| `vercel_access_token` | Vercel Access Tokens | API tokens |
+| `vercel_cli_token` | Vercel CLI Tokens | CLI tokens |
+| `datadog_api_key` | Datadog API Keys | API keys |
+| `launchdarkly_api_key` | LaunchDarkly API Keys | API keys |
+| `launchdarkly_access_token` | LaunchDarkly Access Tokens | API tokens |
+| `pagerduty_api_key` | PagerDuty API Keys | API keys |
+| `browserstack_token_url` | BrowserStack Automate Credentials | `username:access_key` |
 
 Note: Most accurate way to see available validators is to run `validate-secrets list-validators` command.
 
@@ -137,7 +146,27 @@ ENABLE_NOTIFICATIONS=false
 DEFAULT_OUTPUT_FORMAT=csv
 DEFAULT_INPUT_FORMAT=text
 LOG_LEVEL=INFO
+
+# Vendor API region/site selection (optional; defaults to US)
+DATADOG_SITE=datadoghq.com
+LAUNCHDARKLY_HOST=app.launchdarkly.com
+PAGERDUTY_HOST=api.pagerduty.com
 ```
+
+`DATADOG_SITE` accepts `datadoghq.com`, `us3.datadoghq.com`,
+`us5.datadoghq.com`, `datadoghq.eu`, `ap1.datadoghq.com`,
+`ap2.datadoghq.com`, `uk1.datadoghq.com`, `ddog-gov.com`, or
+`us2.ddog-gov.com`. `LAUNCHDARKLY_HOST` accepts
+`app.launchdarkly.com`, `app.eu.launchdarkly.com`, or
+`app.launchdarkly.us`; `PAGERDUTY_HOST` accepts `api.pagerduty.com` or
+`api.eu.pagerduty.com`. Unrecognized values skip the request.
+
+Flickr uses a form POST to its read-only `flickr.test.echo` method to keep the
+key out of debug URLs; only documented error code `100` returns invalid.
+Other new vendor validators are positive-only: rejections, permission errors,
+and ambiguous responses return unknown. LaunchDarkly checks `api-` keys only;
+SDK/mobile keys are not supported. Isolated HTTP sessions ignore environment
+proxy, netrc, and custom CA bundle settings.
 
 ## Data Sources
 
