@@ -1,8 +1,10 @@
 """Test individual validators."""
 
-import pytest
 from pathlib import Path
 import sys
+
+import pytest
+import requests
 
 # Add src to path for testing
 src_path = Path(__file__).parent.parent / "src"
@@ -64,7 +66,7 @@ class TestFodselsNummerChecker:
         # Wrong format
         assert checker.check("99999999999") is False
 
-    def test_valid_format_structure(self):
+    def test_valid_format_structure(self) -> None:
         """Test that properly formatted numbers are processed."""
         checker = FodselsNummerChecker()
 
@@ -90,15 +92,28 @@ class TestGoogleApiKeyChecker:
         # Invalid characters
         assert checker.check("AIzaSy!" * 10) is None
 
-    def test_valid_format_structure(self):
+    def test_valid_format_structure(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test that properly formatted keys are processed."""
         checker = GoogleApiKeyChecker()
 
         # Valid format but fake key
         fake_key = "AIzaSyA" + "B" * 32  # Valid format
-        result = checker.check(fake_key)
-        # Should make an API call and return True/False/None, not fail on format
-        assert result in [True, False, None]
+        response = requests.Response()
+        response.status_code = 200
+        response._content = b'{"status":"OK"}'
+        calls: list[tuple[str, int]] = []
+
+        def fake_get(url: str, timeout: int) -> requests.Response:
+            calls.append((url, timeout))
+            return response
+
+        monkeypatch.setattr(requests, "get", fake_get)
+        assert checker.check(fake_key) is True
+        expected_url = (
+            "https://maps.googleapis.com/maps/api/geocode/json?"
+            "address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=" + fake_key
+        )
+        assert calls == [(expected_url, checker.timeout)]
 
 
 class TestOfficeWebHookChecker:
@@ -117,29 +132,50 @@ class TestOfficeWebHookChecker:
         # Wrong path
         assert checker.check("https://test.webhook.office.com/wrong-path") is None
 
-    def test_valid_format_structure(self):
+    def test_valid_format_structure(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test that properly formatted webhook URLs are processed."""
         checker = OfficeWebHookChecker()
 
         # Valid format but fake webhook
         fake_webhook = "https://test.webhook.office.com/webhookb2/fake-id"
-        result = checker.check(fake_webhook)
-        # Should make an API call and return True/False/None
-        assert result in [True, False, None]
+        response = requests.Response()
+        response.status_code = 400
+        response._content = b"Summary or Text is required."
+        calls: list[tuple[str, str, int]] = []
+
+        def fake_post(url: str, data: str, timeout: int) -> requests.Response:
+            calls.append((url, data, timeout))
+            return response
+
+        monkeypatch.setattr(requests, "post", fake_post)
+        assert checker.check(fake_webhook) is True
+        assert calls == [(fake_webhook, "{}", checker.timeout)]
 
 
 class TestSnykAPITokenChecker:
     """Test the Snyk API token validator."""
 
-    def test_api_call_structure(self):
+    def test_api_call_structure(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test that API calls are made with proper structure."""
         checker = SnykAPITokenChecker()
 
         # Fake token (will fail auth but shouldn't crash)
         fake_token = "fake-token-123"
-        result = checker.check(fake_token)
-        # Should make an API call and return True/False/None
-        assert result in [True, False, None]
+        response = requests.Response()
+        response.status_code = 200
+        response._content = b'{"data":[]}'
+        calls: list[tuple[requests.PreparedRequest, int]] = []
+
+        def fake_send(request: requests.PreparedRequest, timeout: int) -> requests.Response:
+            calls.append((request, timeout))
+            return response
+
+        monkeypatch.setattr(checker.session, "send", fake_send)
+        assert checker.check(fake_token) is True
+        request, timeout = calls[0]
+        assert request.url == checker._api
+        assert request.headers["Authorization"] == f"token {fake_token}"
+        assert timeout == checker.timeout
 
 
 class TestValidatorMetadata:

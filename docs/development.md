@@ -48,14 +48,10 @@ run `git diff --check`. There is no need to run network-backed validator tests.
 
 ### Offline tests
 
-Three existing validator tests make live requests. To skip them:
-
-```bash
-uv run python -m pytest tests/ -k "not test_valid_format_structure and not test_api_call_structure" -v
-```
-
-This also skips a local identity-number test. Report it as a subset, not a full
-pass. Mock network calls in new unit tests. See
+The test suite must run without live provider calls. Validator tests should mock
+the HTTP path and assert meaningful outcomes and request details. Keep local
+loopback tests limited to synthetic fixtures. If a test requires provider access,
+replace that dependency with a mock rather than skipping the test. See
 [lessons learned](../.github/project.instructions.md#lessons-learned) for other traps.
 
 ### Dependency changes

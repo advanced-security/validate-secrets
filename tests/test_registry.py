@@ -33,6 +33,29 @@ class TestValidatorRegistry:
         assert "snyk_api_token" in validators
         assert "databricks_token" in validators
 
+    def test_vendor_registry_names_and_metadata(self) -> None:
+        expected_classes = {
+            "flickr_api_key": "FlickrApiKeyChecker",
+            "clickup_api_key": "ClickUpApiKeyChecker",
+            "vercel_access_token": "VercelAccessTokenChecker",
+            "vercel_cli_token": "VercelCliTokenChecker",
+            "datadog_api_key": "DatadogApiKeyChecker",
+            "launchdarkly_api_key": "LaunchDarklyApiKeyChecker",
+            "launchdarkly_access_token": "LaunchDarklyAccessTokenChecker",
+            "pagerduty_api_key": "PagerDutyApiKeyChecker",
+            "browserstack_token_url": "BrowserStackTokenUrlChecker",
+        }
+        registry = ValidatorRegistry()
+        validators = registry.load_validators()
+        metadata = registry.get_validator_info()
+
+        assert {name: validators[name].__name__ for name in expected_classes} == expected_classes
+        for name, class_name in expected_classes.items():
+            assert metadata[name]["name"] == name
+            assert metadata[name]["class"] == class_name
+            assert metadata[name]["module"] == f"validate_secrets.validators.{name}"
+            assert metadata[name]["description"]
+
     def test_get_validator(self):
         """Test getting a specific validator."""
         registry = ValidatorRegistry()
